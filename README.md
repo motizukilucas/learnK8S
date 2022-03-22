@@ -28,35 +28,43 @@ o pod tem seu ip, que um container dele tem uma porta
 se um container falhar, o pod vai morrer e subir outro pod porem pode ter um ip diferente
 
 Creating a pod:
+    
     $ kubectl run nginx-prod --image=nginx:latest
 
 Getting details about pod including debug:
+    
     $ kubectl describe pod nginx-prod
 
 Shows more information without having to describe it
+    
     $ kubectl get pods -o wide
 
 
 Using a file to create a pod
+    
     $ kubectl apply -f ./primeiro-pod.yaml
 
 Deleting a pod
+    
     $ kubectl delete pod pod-name
     $ kubectl delete -f ./primeiro-prod.yaml
 
 Docker exec -it  bash in k8s
+    
     $ kubectl exec -it portal-noticias -- bash
 
 Ip fixo pra manter comunicação caso um pod cai (serviço), além de DNS e balancemanto de carga
 
 ## Services
 If you add a labels to a pod:
+    
     metadata:
         name: pod-2
         labels:
             app: pod-2
 
 Then add a selector to a service, it will know which pods to look at:
+    
     spec:
         type: ClusterIP
         selector:
