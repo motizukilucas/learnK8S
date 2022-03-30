@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-pod1
+spec:
+  type: NodePort
+  selector:
+    app: pod-1
+  ports:
+    - port: 80
+      # targetPort: 80
+      nodePort: 30000 # value from 30000 to 37k something

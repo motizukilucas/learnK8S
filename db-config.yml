@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+data:
+  MYSQL_ROOT_PASSWORD: "arebaba1"
+  MYSQL_DATABASE: "noticias"

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-portal
+spec:
+  type: NodePort
+  selector:
+    app: portal-noticias
+  ports:
+    - port: 80
+      # targetPort: 80
+      nodePort: 30001 # value from 30000 to 37k something

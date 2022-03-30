@@ -1,4 +1,6 @@
 # LEARN K8
+## To learn later
+* ingress
 ## General
 escalabilidade vertiial => pegar uma maquina de mais poder computacional (mais parruda)
 
@@ -20,6 +22,11 @@ install kubectl (api)
 
 install minikube (cluster)
 minikube start (no meu caso selevional o driver de virtualização do docker
+
+### Accessing from localhost on linux 
+OBS: get minikube IP:
+
+    $ kubectl get nodes -o wide
 
 ## Pods
 uma capsula que pode ter 1 ou mais containers
@@ -53,8 +60,6 @@ Docker exec -it  bash in k8s
     
     $ kubectl exec -it portal-noticias -- bash
 
-Ip fixo pra manter comunicação caso um pod cai (serviço), além de DNS e balancemanto de carga
-
 ## Services
 If you add a labels to a pod:
     
@@ -64,8 +69,26 @@ If you add a labels to a pod:
             app: pod-2
 
 Then add a selector to a service, it will know which pods to look at:
-    
-    spec:
-        type: ClusterIP
+
         selector:
             app: pod-2
+### ClusterIP
+Ip fixo pra manter comunicação caso um pod cai (serviço), além de DNS e balancemanto de carga
+
+    spec:
+        type: ClusterIP
+### NodePort
+Tipo de servico que permite ser acessado pelo mundo de fora, também funciona para dentro do cluster
+
+### LoadBalancer
+LoadBalancer é um clusterIp que permite a comunicação entre o mundo externo e o pods, usando o respectivo cloud provider
+
+## Sistema "noticias" exemplo
+Portal => front end
+
+Sistema => front end para cadastro/gerenciamento
+
+Db => banco de dados
+
+## ConfigMap
+For storing env variables and decopling
