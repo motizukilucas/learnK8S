@@ -1,12 +1,13 @@
 # LEARN K8
 ## To learn later
 * ingress
+
 ## General
 escalabilidade vertiial => pegar uma maquina de mais poder computacional (mais parruda)
 
 escalamento horizontal => mais maquina em pralelo
 
-k8s gerencia 1ou mais maquinas trabalhando em conjunto, chamado de cluster ele pode inclusiver subir mais uma auiqna (virtual)=> orquetração de containers
+k8s gerencia 1 ou mais maquinas trabalhando em conjunto, chamado de cluster ele pode inclusiver subir mais uma auiqna (virtual)=> orquetração de containers
 
 pod => encapsulamento de container
 
@@ -92,3 +93,7 @@ Db => banco de dados
 
 ## ConfigMap
 For storing env variables and decopling
+
+## Ingress
+Ingress is a LB together with target groups
+The requests is directed to a LB then the ingress has rules like a target group, let's say service2.app.com it will redirect the traffic to service2 otherwise it will redirect it to service1
