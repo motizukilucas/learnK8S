@@ -95,5 +95,5 @@ Db => banco de dados
 For storing env variables and decopling
 
 ## Ingress
-Ingress is a LB together with target groups
+**Ingress is a target group**
 The requests is directed to a LB then the ingress has rules like a target group, let's say service2.app.com it will redirect the traffic to service2 otherwise it will redirect it to service1
