@@ -1,0 +1,49 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Logging in to Docker Hub...
+      - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+      - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+      - chmod +x kubectl
+      - mv ./kubectl /usr/local/bin/kubectl
+      # - pip install boto3
+  pre_build:
+    commands:      
+      - aws --version
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - IMAGE_TAG=$IMAGE_TAG
+      - chmod +x $EKS_DEPLOYMENT_PATH/scripts/deployK8s.sh
+      - export KUBECONFIG=$HOME/.kube/config      
+      # - python $EKS_DEPLOYMENT_PATH/scripts/getSecrets.py
+  build:
+    commands:      
+      # - cp env.txt $CODEBUILD_SRC_DIR_App/.env
+      # - cp $EKS_DEPLOYMENT_PATH/docker/$SERVICE_NAME.dockerfile $CODEBUILD_SRC_DIR_App/Dockerfile           
+      # - cd $CODEBUILD_SRC_DIR_App/
+      # - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+      # - cd -
+  post_build:
+    commands:      
+      - |
+        if [ ! -z $container_port_secondary ]; then  
+          sed -i "/containerPort:/a\\\t\t\t\t\t\t- containerPort: $container_port_secondary" /home/andreeiruan/Documents/projects/ezops/nugget/infrastructure/environments/dev/k8s/deployment.yml
+          echo "    - protocol: TCP
+              port: $container_port_secondary
+              targetPort: $container_port_secondary
+              name: grpc-port
+          " >> /home/andreeiruan/Documents/projects/ezops/nugget/infrastructure/environments/dev/k8s/service.yml
+        fi 
+    
+      # - docker push $REPOSITORY_URI:$IMAGE_TAG      
+      - CREDENTIALS=$(aws sts assume-role --role-arn $EKS_KUBECTL_ROLE_ARN --role-session-name codebuild-kubectl --duration-seconds 900)
+      - export AWS_ACCESS_KEY_ID="$(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId')"
+      - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
+      - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
+      - export AWS_EXPIRATION=$(echo ${CREDENTIALS} | jq -r '.Credentials.Expiration')
+      - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
+      - $EKS_DEPLOYMENT_PATH/scripts/deployK8s.sh
+      - printf '[{"name":"$SERVICE_NAME","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > build.json
+artifacts:
+  files: build.json

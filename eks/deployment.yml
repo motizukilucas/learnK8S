@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $SERVICE_NAME
+  labels:
+    app: $SERVICE_NAME
+  namespace: $ENV_NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: $SERVICE_NAME
+  replicas: $NUMBER_OF_REPLICAS
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: $SERVICE_NAME
+    spec:
+      containers:
+        - name: $SERVICE_NAME
+          image: $REPOSITORY_URI:$IMAGE_TAG
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: $MEMORY_REQUESTS
+              cpu: $CPU_REQUESTS
+            limits:
+              memory: $MEMORY_LIMITS
+              cpu: $CPU_LIMITS
+          ports:
+            - containerPort: $CONTAINER_PORT
+						- containerPort: 8888
+          readinessProbe:
+            httpGet:
+              path: $PATH_HEALTH
+              port: $CONTAINER_PORT
+            initialDelaySeconds: $DELAY_READINESS
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: $PATH_HEALTH
+              port: $CONTAINER_PORT
+            initialDelaySeconds: $DELAY_LIVENESS
+            failureThreshold: 2
+            periodSeconds: 10
+            timeoutSeconds: 5
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: $SERVICE_NAME
+  namespace: $ENV_NAMESPACE
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: $SERVICE_NAME
+  minReplicas: $NUMBER_OF_REPLICAS
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
