@@ -72,3 +72,7 @@ letsencrypt-prod
 cria o certificado
 
 OBS: não tem issuer!
+> **it's the issuer that generates the secret**
+
+
+he deployed  nginx issuer
