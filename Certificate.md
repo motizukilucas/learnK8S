@@ -73,6 +73,7 @@ cria o certificado
 
 OBS: não tem issuer!
 > **it's the issuer that generates the secret**
+> the issuer needs a production server of lets encrypt?? don't know what that is exatcly
 
 
 he deployed  nginx issuer
